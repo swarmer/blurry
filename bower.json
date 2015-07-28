@@ -1,0 +1,25 @@
+{
+  "name": "blurry",
+  "version": "0.0.0",
+  "homepage": "https://github.com/swarmer/blurry",
+  "authors": [
+    "Anton Barkovsky <anton@swarmer.me>"
+  ],
+  "description": "My Personal website",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.8.3",
+    "jquery": "~2.1.4",
+    "bootstrap": "~3.3.5"
+  }
+}

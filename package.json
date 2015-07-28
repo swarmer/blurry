@@ -1,0 +1,19 @@
+{
+  "name": "blurry",
+  "version": "0.0.0",
+  "description": "My personal page",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swarmer/blurry.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer-core": "^5.2.1",
+    "cssnano": "^2.1.0",
+    "grunt": "^0.4.5",
+    "grunt-bower": "^0.20.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-postcss": "^0.5.5"
+  }
+}
