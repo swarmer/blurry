@@ -1,12 +1,12 @@
 module.exports = function(grunt) {
-  var distPath = 'blurry/static/dist';
+  var distPath = 'build/static/dist/';
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
     watch: {
-      css: {
-        files: ['blurry/static/*.css'],
+      all: {
+        files: ['blurry/**'],
         tasks: ['default'],
       },
     },
@@ -15,7 +15,7 @@ module.exports = function(grunt) {
       options: {
         map: {
           inline: false,
-          annotation: 'blurry/static/dist/maps/'
+          annotation: distPath + 'maps/'
         },
 
         processors: [
@@ -33,8 +33,7 @@ module.exports = function(grunt) {
       },
 
       custom: {
-        src: 'blurry/static/*.css',
-        dest: 'blurry/static/dist/style.css'
+        src: 'build/static/*.css',
       }
     },
 
@@ -82,8 +81,21 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      'static': {
-        src: [distPath]
+      build: {
+        src: ['build/*']
+      }
+    },
+
+    copy: {
+      build: {
+        files: [
+          {
+            expand: true,
+            cwd: 'blurry/',
+            src: '**',
+            dest: 'build/'
+          }
+        ]
       }
     }
   });
@@ -92,6 +104,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask('default', ['clean:static', 'bower', 'postcss:custom']);
+  grunt.registerTask('default',
+    ['clean:build', 'copy:build', 'bower', 'postcss:custom']);
 };
