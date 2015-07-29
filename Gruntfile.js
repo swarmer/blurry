@@ -15,7 +15,6 @@ module.exports = function(grunt) {
       options: {
         map: {
           inline: false,
-          annotation: distPath + 'maps/'
         },
 
         processors: [
@@ -33,7 +32,14 @@ module.exports = function(grunt) {
       },
 
       custom: {
-        src: 'build/static/*.css',
+        files: [
+          {
+            expand: true,
+            src: ['build/static/*.css'],
+            dest: './',
+            ext: '.min.css',
+          },
+        ]
       }
     },
 
@@ -97,6 +103,23 @@ module.exports = function(grunt) {
           }
         ]
       }
+    },
+
+    uglify: {
+      options: {
+        mangle: false,
+        sourceMap: true,
+      },
+      custom: {
+        files: [
+          {
+            expand: true,
+            src: ['build/static/*.js'],
+            dest: './',
+            ext: '.min.js',
+          },
+        ]
+      }
     }
   });
 
@@ -105,7 +128,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
 
   grunt.registerTask('default',
-    ['clean:build', 'copy:build', 'bower', 'postcss:custom']);
+    ['clean:build', 'copy:build', 'bower',
+      'postcss:custom', 'uglify:custom']);
 };
