@@ -13,19 +13,6 @@ function negativeMod(x, n) {
     return ((x % n) + n) % n;
 }
 
-function fillCircle(ctx, centerX, centerY, radius) {
-    ctx.save();
-
-    ctx.beginPath();
-    ctx.translate(centerX, centerY);
-    ctx.scale(radius, radius);
-
-    ctx.arc(0, 0, 1, 0, 2 * Math.PI);
-    ctx.fill();
-
-    ctx.restore();
-}
-
 function prerenderCircle (circleRadius, color) {
     var size = 2 * circleRadius;
 
@@ -147,15 +134,24 @@ CanvasDemo.prototype.updateState = function (deltaMs) {
     for (var i = 0; i < this.circles.length; ++i) {
         var circle = this.circles[i];
         var step = this.pixelsPerSecond / 1000 * deltaMs;
-        circle.centerX += step * Math.cos(circle.direction);
-        circle.centerY += step * Math.sin(circle.direction);
+        var newX = circle.centerX + step * Math.cos(circle.direction);
+        var newY = circle.centerY + step * Math.sin(circle.direction);
 
-        if (circle.centerX >= this.canvas.width || circle.centerX < 0)
+        var hold = false;
+        if (newX >= this.canvas.width || newX < 0) {
             circle.direction = Math.PI - circle.direction;
-        if (circle.centerY >= this.canvas.height || circle.centerY < 0)
+            hold = true;
+        }
+        if (newY >= this.canvas.height || newY < 0) {
             circle.direction = 2 * Math.PI - circle.direction;
-
+            hold = true;
+        }
         circle.direction = negativeMod(circle.direction, 2 * Math.PI);
+
+        if (!hold) {
+            circle.centerX = newX;
+            circle.centerY = newY;
+        }
     }
 };
 
