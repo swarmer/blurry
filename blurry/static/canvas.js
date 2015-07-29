@@ -5,6 +5,14 @@ function bound(obj, methodName) {
     return obj[methodName].bind(obj);
 }
 
+function randFloat(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function negativeMod(x, n) {
+    return ((x % n) + n) % n;
+}
+
 function fillCircle(ctx, centerX, centerY, radius) {
     ctx.save();
 
@@ -59,12 +67,6 @@ function prerenderCircle (circleRadius, color) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, size, size);
 
-    /*var cont = $('<div></div>');
-    cont.css('display', 'inline-block');
-    cont.css('background-color', '#333333');
-    $('header').after(cont);
-    cont.append($(buffer));*/
-
     return buffer;
 }
 
@@ -80,13 +82,15 @@ function CanvasDemo(canvas) {
 
 CanvasDemo.prototype.circleCount = 20;
 
+CanvasDemo.prototype.pixelsPerSecond = 40;
+
 CanvasDemo.prototype.generateCircle = function () {
     var canvasWidth = this.canvas.width;
     var canvasHeight = this.canvas.height;
 
     var minDimension = Math.min(canvasWidth, canvasHeight);
     var minRadius = Math.floor(minDimension / 4);
-    var maxRadius = Math.floor(minDimension / 2);
+    var maxRadius = Math.floor(minDimension / 1.5);
     var circleRadius = _.random(minRadius, maxRadius);
 
     var minRGB = 64;
@@ -99,11 +103,14 @@ CanvasDemo.prototype.generateCircle = function () {
     var centerX = _.random(0, canvasWidth);
     var centerY = _.random(0, canvasHeight);
 
+    var direction = randFloat(0, 2 * Math.PI);
+
     return {
         buffer: prerenderCircle(circleRadius, color, this.blurRadius),
 
         centerX: centerX,
-        centerY: centerY
+        centerY: centerY,
+        direction: direction
     };
 };
 
@@ -137,7 +144,19 @@ CanvasDemo.prototype.draw = function () {
 };
 
 CanvasDemo.prototype.updateState = function (deltaMs) {
+    for (var i = 0; i < this.circles.length; ++i) {
+        var circle = this.circles[i];
+        var step = this.pixelsPerSecond / 1000 * deltaMs;
+        circle.centerX += step * Math.cos(circle.direction);
+        circle.centerY += step * Math.sin(circle.direction);
 
+        if (circle.centerX >= this.canvas.width || circle.centerX < 0)
+            circle.direction = Math.PI - circle.direction;
+        if (circle.centerY >= this.canvas.height || circle.centerY < 0)
+            circle.direction = 2 * Math.PI - circle.direction;
+
+        circle.direction = negativeMod(circle.direction, 2 * Math.PI);
+    }
 };
 
 CanvasDemo.prototype.tick = function (timestamp) {
