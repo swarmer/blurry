@@ -109,6 +109,10 @@ module.exports = function(grunt) {
       options: {
         mangle: false,
         sourceMap: true,
+        compress: {
+          sequences: false,
+          join_vars: false
+        }
       },
       custom: {
         files: [

@@ -18,6 +18,56 @@ function fillCircle(ctx, centerX, centerY, radius) {
     ctx.restore();
 }
 
+function prerenderCircle (circleRadius, color) {
+    var size = 2 * circleRadius;
+
+    var buffer = document.createElement('canvas');
+    buffer.width = size;
+    buffer.height = size;
+
+    var ctx = buffer.getContext('2d');
+
+    var red = color[0], green = color[1], blue = color[2], alpha = color[3];
+    var center = size / 2;
+    var gradient = ctx.createRadialGradient(
+        center, center, center, center, center, 0
+    );
+
+    var stops = [
+        [0, 0],
+        [0.1, 0.02612],
+        [0.2, 0.05613],
+        [0.3, 0.110],
+        [0.4, 0.197],
+        [0.5, 0.324],
+        [0.6, 0.486],
+        [0.7, 0.667],
+        [0.8, 0.835],
+        [0.9, 0.956],
+        [1, 1],
+    ];
+    for (var i = 0; i < stops.length; ++i) {
+        var stop = stops[i][0];
+        var coeff = stops[i][1];
+
+        var color = sprintf('rgba(%d, %d, %d, %f)',
+            red, green, blue, alpha * coeff
+        );
+        gradient.addColorStop(stop, color);
+    }
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+
+    /*var cont = $('<div></div>');
+    cont.css('display', 'inline-block');
+    cont.css('background-color', '#333333');
+    $('header').after(cont);
+    cont.append($(buffer));*/
+
+    return buffer;
+}
+
 
 function CanvasDemo(canvas) {
     if (!(this instanceof CanvasDemo))
@@ -25,9 +75,43 @@ function CanvasDemo(canvas) {
 
     this.lastTimestamp = null;
     this.canvas = canvas;
-    this.x = 200;
+    this.circles = this.generateCircles(this.circleCount);
+}
 
-    this.resize();
+CanvasDemo.prototype.circleCount = 20;
+
+CanvasDemo.prototype.generateCircle = function () {
+    var canvasWidth = this.canvas.width;
+    var canvasHeight = this.canvas.height;
+
+    var minDimension = Math.min(canvasWidth, canvasHeight);
+    var minRadius = Math.floor(minDimension / 4);
+    var maxRadius = Math.floor(minDimension / 2);
+    var circleRadius = _.random(minRadius, maxRadius);
+
+    var minRGB = 64;
+    var maxRGB = 255;
+    var red = _.random(minRGB, maxRGB);
+    var green = _.random(minRGB, maxRGB);
+    var blue = _.random(minRGB, maxRGB);
+    var color = [red, green, blue, 0.7];
+
+    var centerX = _.random(0, canvasWidth);
+    var centerY = _.random(0, canvasHeight);
+
+    return {
+        buffer: prerenderCircle(circleRadius, color, this.blurRadius),
+
+        centerX: centerX,
+        centerY: centerY
+    };
+};
+
+CanvasDemo.prototype.generateCircles = function (count) {
+    var circles = [];
+    for (var i = 0; i < count; ++i)
+        circles.push(this.generateCircle());
+    return circles;
 }
 
 CanvasDemo.prototype.resize = function () {
@@ -41,14 +125,19 @@ CanvasDemo.prototype.draw = function () {
     var width = this.canvas.width;
     var height = this.canvas.height;
 
-    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#333333';
+    ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = 'red';
-    fillCircle(ctx, this.x, 200, 100);
+    for (var i = 0; i < this.circles.length; ++i) {
+        var circle = this.circles[i];
+        var leftX = circle.centerX - circle.buffer.width / 2;
+        var topY = circle.centerY - circle.buffer.height / 2;
+        ctx.drawImage(circle.buffer, leftX, topY);
+    }
 };
 
 CanvasDemo.prototype.updateState = function (deltaMs) {
-    this.x += (40 / 1000) * deltaMs;
+
 };
 
 CanvasDemo.prototype.tick = function (timestamp) {
