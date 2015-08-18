@@ -7,7 +7,7 @@
   ],
   "description": "My Personal website",
   "moduleType": [
-    "amd"
+    "globals"
   ],
   "license": "MIT",
   "ignore": [
