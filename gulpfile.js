@@ -65,10 +65,9 @@ gulp.task('css', ['copyStatic'], function () {
         .pipe(gulp.dest(path.join(buildDest, 'static/')));
 });
 
-gulp.task('uglify', ['copyStatic', 'bower'], function() {
+gulp.task('uglify', ['copyStatic'], function() {
   return gulp.src([
         path.join(buildDest, 'static/*.js'),
-        path.join(buildDest, 'static/sprintf/*.js')
     ])
     .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
