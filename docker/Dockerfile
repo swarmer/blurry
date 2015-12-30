@@ -8,7 +8,7 @@ RUN apt-get update -y && \
         nodejs-legacy \
         npm \
         unzip \
-        lighttpd
+        nginx
 RUN npm install -g \
     bower \
     gulp
@@ -28,7 +28,13 @@ COPY build/blurry.zip /tmp/blurry.zip
 RUN unzip -o /tmp/blurry.zip -d /
 
 
+# Setup nginx
+COPY blurry-nginx.conf /etc/nginx/sites-available/blurry
+RUN ln -s /etc/nginx/sites-available/blurry /etc/nginx/sites-enabled/blurry
+СOPY nginx.conf /etc/nginx.conf
+
+
 # Container settings
 WORKDIR /blurry
 EXPOSE 80
-CMD lighttpd -D -f /etc/lighttpd/lighttpd.conf
+CMD nginx
