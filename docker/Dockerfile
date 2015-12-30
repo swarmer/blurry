@@ -23,15 +23,17 @@ RUN npm install
 RUN bower install --allow-root
 
 
-# Unpack the application code
+# Unpack and build the application code
 COPY build/blurry.zip /tmp/blurry.zip
 RUN unzip -o /tmp/blurry.zip -d /
+RUN gulp
 
 
 # Setup nginx
 COPY blurry-nginx.conf /etc/nginx/sites-available/blurry
 RUN ln -s /etc/nginx/sites-available/blurry /etc/nginx/sites-enabled/blurry
-СOPY nginx.conf /etc/nginx.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/sites-enabled/default
 
 
 # Container settings
